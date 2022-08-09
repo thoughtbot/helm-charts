@@ -1,0 +1,55 @@
+{{- range $namespace := .Values.namespaces -}}
+{{-   $namespaceSet := dict "namespace" $namespace -}}
+{{-   $_ := set $namespaceSet "Release" $.Release -}}
+{{-   $_ := set $namespaceSet "Values" $.Values -}}
+{{- $secretproviderclasslist:= list }}
+{{- if $namespace.secretproviderclass }}
+  {{- range $key,$value:= $namespace.secretproviderclass }}
+    {{- $secretproviderclasslist = append $secretproviderclasslist $key }}
+  {{- end }}
+{{- end }}
+---
+{{   template "namespace" $namespaceSet }}
+---
+{{- range $key, $service := $.Values.services -}}
+{{-   $_ := merge $service (deepCopy $.Values.defaults) -}}
+{{-   range $containerKey, $container := $service.containers -}}
+{{-     $_ := merge $container (deepCopy (default dict (get $.Values.containers $containerKey))) -}}
+{{-     if hasKey $container "http" -}}
+{{-       $_ := include "http" (dict "service" $service.service "container" $container "Values" $.Values) -}}
+{{-     end -}}
+{{-     if hasKey $container "sidekiq" -}}
+{{-       $_ := include "sidekiq" (dict "service" $service.service "container" $container) -}}
+{{-     end -}}
+{{-   end -}}
+{{-   range $containerKey, $container := $service.initContainers -}}
+{{-     $_ := merge $container (deepCopy (default dict (get $.Values.containers $containerKey))) -}}
+{{-   end -}}
+{{-   if or $service.enabled (not (hasKey $service "enabled")) -}}
+{{-     $allservicenames := default $service.templateservices (list (default $key $service.name)) -}}
+{{-     range $multiservicenames := $allservicenames -}}        
+{{        $_ := set $service "Release" $.Release -}}
+{{-       $_ := set $service "Values" $.Values -}}
+{{-       $_ := set $service "component" $multiservicenames -}}
+{{-       $_ := set $service "namespace" $namespace -}}
+{{-       $_ := set $service "secretproviderclasslist" $secretproviderclasslist -}}
+--- 
+{{        template "deployment" $service }}
+--- 
+{{        template "prometheusrules" $service }}
+--- 
+{{        template "service" $service }}
+--- 
+{{        template "hpa" $service }}
+--- 
+{{        template "vpa" $service }}
+--- 
+{{        template "poddisruptionbudget" $service }}
+--- 
+{{        template "servicemonitor" $service }}
+---
+{{    end -}}
+{{    end -}}
+{{- $_ := unset $service.service "ports" -}}
+{{- end -}}
+{{- end -}}

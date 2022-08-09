@@ -1,0 +1,53 @@
+---
+# Source: helm-rails/templates/virtualservice.yaml
+apiVersion: networking.istio.io/v1alpha3
+kind: VirtualService
+metadata:
+  name: default-example-app-virtualservice
+  namespace: default
+  labels:
+    app.kubernetes.io/instance: production
+    app.kubernetes.io/name: example-app
+    app.kubernetes.io/version: "458cd7e"
+    app.kubernetes.io/managed-by: Helm
+    initiator: githubActions
+spec:
+  gateways:
+  - flightdeck/flightdeck
+  hosts:
+  - default.example.com
+  http:
+  - match:
+    - uri:
+        prefix: /default-worker
+    retries:
+      attempts: 0
+    route:
+    - destination:
+        host: example-app-default-worker
+        port:
+          number: 3000
+  - match:
+    - uri:
+        prefix: /reports-worker
+    retries:
+      attempts: 0
+    route:
+    - destination:
+        host: example-app-reports-worker
+        port:
+          number: 3000
+  - match:
+    - uri:
+        prefix: /home
+    retries:
+      attempts: 0
+    route:
+    - destination:
+        host: example-app-web
+        port:
+          number: 3000
+    headers:
+      request:
+        set:
+          x-request-start: t=%START_TIME(%s.%3f)%

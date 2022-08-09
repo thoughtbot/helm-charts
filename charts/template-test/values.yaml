@@ -1,0 +1,204 @@
+app:
+  image: docker.io/myimage
+  instance: production
+  version: 458cd7e
+
+config:
+  env:
+    data:
+      APPLICATION_HOST: example.com
+      AWS_REGION: us-east-1
+      LANG: en_US.UTF-8
+      NODE_ENV: production
+      PORT: "3000"
+
+defaults:
+  csiSecrets:
+  - postgres
+  container:
+    envFrom:
+    - configMapRef:
+        name: env
+    - secretRef:
+        name: postgres
+  pod:
+    securityContext:
+      fsGroup: 1234
+    serviceAccountName: example-app
+    topologySpreadConstraints:
+    - maxSkew: 3
+      topologyKey: topology.kubernetes.io/zone
+      whenUnsatisfiable: DoNotSchedule
+
+containers:
+  example-app:
+    readinessprobehost: example.com
+    autosizing:
+      maxAllowed:
+        cpu: 1000m
+        memory: 2Gi
+    resources:
+      limits:
+        memory: 1024Mi
+      requests:
+        cpu: 128m
+        memory: 512Mi
+  prometheus-exporter:
+    readinessprobehost: example.com
+    autosizing:
+      maxAllowed:
+        cpu: 1000m
+        memory: 2Gi
+
+services:
+  
+  web:
+    containers:
+      example-app:
+        http: {}
+      prometheus-exporter: {}
+    autoscaling:
+      enabled: true
+      minReplicas: 3
+      maxReplicas: 24
+      behavior:
+        scaleDown:
+          policies:
+          - periodSeconds: 60
+            type: Pods
+            value: 1
+          stabilizationWindowSeconds: 120
+        scaleUp:
+          policies:
+          - periodSeconds: 120
+            type: Percent
+            value: 25
+          - periodSeconds: 120
+            type: Pods
+            value: 3
+          selectPolicy: Max
+      metrics:
+      - object:
+          describedObject:
+            apiVersion: v1
+            kind: Service
+            name: web-service
+          metric:
+            name: ruby_http_queue_duration_seconds_95p1m
+          target:
+            type: Value
+            value: 50m
+        type: Object
+      - pods:
+          metric:
+            name: ruby_http_requests_per_second
+          target:
+            averageValue: 11
+            type: AverageValue
+        type: Pods
+    autosizing:
+      enabled: true
+    initContainers:
+      migrations:
+        name: migrations
+        args:
+        - rails
+        - db:abort_if_pending_migrations
+    virtualservice:
+      headers: true
+      matchprefix: /home
+    podannotations:
+      sidecar.istio.io/rewriteAppHTTPProbers: "false"
+    poddisruptionbudget:
+      enabled: true
+
+  default-worker:
+    containers:
+      example-app:
+        sidekiq:
+          queues:
+          - default,10
+          - mailers,1
+    autoscaling:
+      enabled: true
+      minReplicas: 1
+      maxReplicas: 10
+      metrics:
+      - type: Object
+        object:
+          metric:
+            name: ruby_sidekiq_queue_latency_seconds_95p1m
+          describedObject:
+            apiVersion: v1
+            kind: Service
+          target:
+            type: Value
+            value: 1
+    virtualservice:
+      headers: false
+      matchprefix: /default-worker
+
+  reports-worker:
+    containers:
+      example-app:
+        sidekiq:
+          queues:
+          - reports
+          concurrency: 1
+    virtualservice:
+      headers: false
+      matchprefix: /reports-worker
+  
+  reaper:
+    containers:
+      example-app:
+        command:
+        - rails
+        - reaper
+    strategy:
+      type: Recreate
+
+namespaces:
+- name: default
+  hosts:
+  - default.example.com
+  virtualservice:
+    enabled: true
+  secretproviderclass:
+    secretsmanager:
+      default-secrets-one:
+        secretkeys: 
+          - HOST_NAME
+          - PROTOCOL
+          - USERNAME
+      default-secrets-two:
+        secretkeys: 
+          - HASH
+          - SALT
+  serviceaccounts:
+    default:
+      iamrolearn: arn:aws:iam::000011112222:role/default
+
+jobs:
+  run-example-job:
+    backoffLimit: 1
+    containers:
+      example-app:
+        http: {}
+        command:
+        - /bin/sh
+        - -c
+        - bundle exec rails main:execute
+    restartPolicy: Never
+
+cronjobs:
+  run-example-cronjob:
+    schedule: '*/5 * * * *'
+    containers:
+      example-app:
+        http: {}
+        command:
+        - /bin/sh
+        - -c
+        - bundle exec rails main:execute
+    restartPolicy: Never

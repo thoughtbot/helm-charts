@@ -1,0 +1,15 @@
+{{- range $namespace := .Values.namespaces -}}
+{{- range $key, $job := $.Values.jobs -}}
+{{-   $_ := merge $job (deepCopy $.Values.defaults) -}}
+{{-   range $containerKey, $container := $job.containers -}}
+{{-     $_ := merge $container (deepCopy (default dict (get $.Values.containers $containerKey))) -}}
+{{-   end -}}
+{{      $_ := set $job "Release" $.Release -}}
+{{-     $_ := set $job "Values" $.Values -}}
+{{-     $_ := set $job "component" (default $key $job.name) -}}
+{{-     $_ := set $job "namespace" $namespace -}}
+---
+{{      template "job" $job }}
+---
+{{- end -}}
+{{- end -}}

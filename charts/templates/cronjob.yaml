@@ -1,0 +1,15 @@
+{{- range $namespace := .Values.namespaces -}}
+{{- range $key, $cronjob := $.Values.cronjobs -}}
+{{-   $_ := merge $cronjob (deepCopy $.Values.defaults) -}}
+{{-   range $containerKey, $container := $cronjob.containers -}}
+{{-     $_ := merge $container (deepCopy (default dict (get $.Values.containers $containerKey))) -}}
+{{-   end -}}
+{{      $_ := set $cronjob "Release" $.Release -}}
+{{-     $_ := set $cronjob "Values" $.Values -}}
+{{-     $_ := set $cronjob "component" (default $key $cronjob.name) -}}
+{{-     $_ := set $cronjob "namespace" $namespace -}}
+---
+{{      template "cronjob" $cronjob }}
+---
+{{- end -}}
+{{- end -}}

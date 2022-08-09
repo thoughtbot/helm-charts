@@ -1,0 +1,86 @@
+---
+# Source: helm-rails/templates/cronjob.yaml
+apiVersion: batch/v1beta1
+kind: CronJob
+metadata:
+  name: example-app-run-example-cronjob
+  namespace: default
+  labels:
+    app.kubernetes.io/component: run-example-cronjob
+    app.kubernetes.io/instance: production
+    app.kubernetes.io/name: example-app
+    app.kubernetes.io/version: "458cd7e"
+    app.kubernetes.io/managed-by: Helm
+    initiator: githubActions
+spec:
+  schedule: '*/5 * * * *'
+  jobTemplate:
+    metadata:
+      labels:
+        app.kubernetes.io/component: run-example-cronjob
+        app.kubernetes.io/instance: production
+        app.kubernetes.io/name: example-app
+        app.kubernetes.io/version: "458cd7e"
+        app.kubernetes.io/managed-by: Helm
+        initiator: githubActions
+    spec:
+      template:
+        metadata:
+          labels:
+            app.kubernetes.io/component: run-example-cronjob
+            app.kubernetes.io/instance: production
+            app.kubernetes.io/name: example-app
+        spec:
+          containers:
+          - command:
+            - /bin/sh
+            - -c
+            - bundle exec rails main:execute
+            envFrom:
+            - configMapRef:
+                name: example-app-env
+            - secretRef:
+                name: postgres
+            - secretRef:
+                name: secretsmanager
+            image: docker.io/myimage:458cd7e
+            imagePullPolicy: IfNotPresent
+            name: example-app
+            resources:
+              limits:
+                memory: 1024Mi
+              requests:
+                cpu: 128m
+                memory: 512Mi
+            volumeMounts:
+            - name: postgres
+              mountPath: /csiSecrets/postgres
+              readOnly: true
+            - name: secretsmanager
+              mountPath: /secretsmanager
+              readOnly: true
+          securityContext:
+            fsGroup: 1234
+          restartPolicy: Never
+          topologySpreadConstraints:
+          - maxSkew: 3
+            topologyKey: topology.kubernetes.io/zone
+            whenUnsatisfiable: DoNotSchedule
+            labelSelector:
+              matchLabels:
+                app.kubernetes.io/component: run-example-cronjob
+                app.kubernetes.io/instance: production
+                app.kubernetes.io/name: example-app
+          volumes:
+          - name: postgres
+            csi:
+              driver: secrets-store.csi.k8s.io
+              readOnly: true
+              volumeAttributes:
+                secretProviderClass: postgres
+          - name: secretsmanager
+            csi:
+              driver: secrets-store.csi.k8s.io
+              readOnly: true
+              volumeAttributes:
+                secretProviderClass: secretsmanager

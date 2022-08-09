@@ -1,0 +1,65 @@
+---
+# Source: helm-rails/templates/prometheus-rules.yaml
+apiVersion: monitoring.coreos.com/v1
+kind: PrometheusRule
+
+metadata:
+  name: rails
+  labels:
+    prometheus: flightdeck-prometheus
+
+spec:
+  groups:
+  - name: rails
+    rules:
+    - expr: |
+        histogram_quantile(
+          0.95,
+          sum by (namespace, service, le) (rate(ruby_http_request_queue_duration_seconds_bucket[5m]))
+        )
+      record: app:ruby_http_queue_duration_seconds:95p5m
+    - expr: |
+        histogram_quantile(
+          0.95,
+          sum by (namespace, service, le) (rate(ruby_http_request_queue_duration_seconds_bucket[1m]))
+        )
+      record: app:ruby_http_queue_duration_seconds:95p1m
+    - expr: |
+        histogram_quantile(
+          0.99,
+          sum by (namespace, service, le) (rate(ruby_http_request_queue_duration_seconds_bucket[1m]))
+        )
+      record: app:ruby_http_queue_duration_seconds:99p1m
+
+    - expr: |
+        histogram_quantile(
+          0.95,
+          sum by (namespace, service, le) (rate(ruby_http_request_duration_seconds_bucket[5m]))
+        )
+      record: app:ruby_http_request_duration_seconds_bucket:95p5m
+    - expr: |
+        histogram_quantile(
+          0.95,
+          sum by (namespace, service, le) (rate(ruby_http_request_duration_seconds_bucket[1m]))
+        )
+      record: app:ruby_http_request_duration_seconds_bucket:95p1m
+    - expr: |
+        histogram_quantile(
+          0.99,
+          sum by (namespace, service, le) (rate(ruby_http_request_duration_seconds_bucket[1m]))
+        )
+      record: app:ruby_http_request_duration_seconds_bucket:99p1m
+
+    - expr: |
+        sum without (pod, instance) (rate(ruby_http_queue_duration_seconds_sum[5m])) / 
+        sum without (pod, instance) (rate(ruby_http_queue_duration_seconds_count[5m]))
+      record: app:ruby_http_queue_duration_seconds:mean
+
+    - expr: |
+        sum(irate(ruby_http_requests_total[1m])) without (pod, instance)
+      record: app:http_requests:rate1m
+
+    - expr: |
+        sum without (pod, instance) (rate(ruby_http_duration_seconds_sum[5m])) / 
+        sum without (pod, instance) (rate(ruby_http_duration_seconds_count[5m]))
+      record: app:ruby_http_duration_seconds:mean

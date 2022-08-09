@@ -1,0 +1,17 @@
+{{- range $namespace := .Values.namespaces -}}
+{{ range $name, $data := $.Values.config }}
+{{- $_ := set . "Release" $.Release -}}
+{{- $_ := set . "Values" $.Values -}}
+{{ $_ := set . "component" $name }}
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "fullname" . }}
+  namespace: {{ $namespace.name }}
+  labels:
+    {{- include "labels" . | nindent 4 }}
+data:
+  {{- .data | toYaml | nindent 2 }}
+{{- end }}
+{{ end }}

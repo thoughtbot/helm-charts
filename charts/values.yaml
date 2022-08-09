@@ -1,0 +1,114 @@
+app:
+  instance: ""
+  name: ""
+  version: latest
+  web:
+    port: 3000
+
+destination:
+  server: https://kubernetes.default.svc
+
+defaults:
+  istioInjection: true
+  autoscaling:
+    minReplicas: 1
+    maxReplicas: 5
+    metrics:
+    - type: Resource
+      resource:
+        name: cpu
+        targetAverageUtilization: 70
+
+  autosizing:
+    updatePolicy:
+      updateMode: Auto
+
+  poddisruptionbudget:
+    enabled: false
+    minAvailable: 25%
+
+  prometheusservicelevel:
+    enabled: false
+
+  container:
+    envFrom:
+    - configMapRef:
+        name: env
+
+  pod: {}
+
+  replicas: 1
+
+  service:
+    http:
+      port: 3000
+    PodDisruptionBudget:
+      enabled: true
+
+  virtualservice:
+    requestheaders: 
+      x-request-start: t=%START_TIME(%s.%3f)%
+    gateways:
+    - flightdeck/flightdeck
+    retries:
+      attempts: 0
+
+config:
+  env:
+    data:
+      LANG: en_US.UTF-8
+      RACK_ENV: production
+      RAILS_ENV: production
+      RAILS_LOG_TO_STDOUT: enabled
+      RAILS_SERVE_STATIC_FILES: enabled
+
+containers:
+  prometheus-exporter:
+    args:
+    - bundle
+    - exec
+    - prometheus_exporter
+    - -b
+    - 0.0.0.0
+    - --histogram
+    http:
+      port: 9394
+      portName: metrics
+    livenessProbe:
+      failureThreshold: 3
+      httpGet:
+        path: /metrics
+        port: 9394
+        scheme: HTTP
+      initialDelaySeconds: 10
+      periodSeconds: 10
+      successThreshold: 1
+      timeoutSeconds: 2
+    readinessProbe:
+      failureThreshold: 1
+      httpGet:
+        path: /metrics
+        port: 9394
+        scheme: HTTP
+      initialDelaySeconds: 10
+      periodSeconds: 10
+      successThreshold: 1
+      timeoutSeconds: 2
+    resources:
+      requests:
+        cpu: 5m
+        memory: "32Mi"
+      limits:
+        memory: "64Mi"
+
+services: {}
+
+namespaces:
+- name: default
+  virtualservice:
+    enabled: true
+  serviceaccount:
+    default:
+      create: false
+
+jobs: {}

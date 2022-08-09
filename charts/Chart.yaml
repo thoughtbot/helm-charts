@@ -1,0 +1,9 @@
+apiVersion: v2
+name: helm-rails
+description: Helm chart for deploying Rails applications
+
+type: application
+
+version: 0.1.0
+
+appVersion: 1.0.0
