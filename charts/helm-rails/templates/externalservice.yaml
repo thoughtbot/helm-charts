@@ -1,0 +1,11 @@
+{{- range $namespace := .Values.namespaces -}}
+{{- range $key, $externalService := $.Values.externalServices -}}
+{{-   $_ := merge $externalService (deepCopy $.Values.defaults) -}}
+{{      $_ := set $externalService "Release" $.Release -}}
+{{-     $_ := set $externalService "Values" $.Values -}}
+{{-     $_ := set $externalService "namespace" $namespace -}}
+---
+{{      template "externalservice" $externalService }}
+---
+{{- end -}}
+{{- end -}}
