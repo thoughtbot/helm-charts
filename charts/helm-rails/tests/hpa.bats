@@ -34,7 +34,7 @@ YAML
 
   assert_json '.metrics[0].type' 'Resource'
   assert_json '.metrics[0].resource.name' 'cpu'
-  assert_json '.metrics[0].resource.targetAverageUtilization' '70'
+  assert_json '.metrics[0].resource.targetAverageUtilization' '65'
 
   assert_json '.scaleTargetRef.apiVersion' 'apps/v1'
   assert_json '.scaleTargetRef.kind' 'Deployment'
