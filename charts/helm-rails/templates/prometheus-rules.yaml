@@ -1,3 +1,5 @@
+{{- define "prometheusrules" -}}
+{{- if .setprometheusrules -}}
 apiVersion: monitoring.coreos.com/v1
 kind: PrometheusRule
 
@@ -61,3 +63,6 @@ spec:
         sum without (pod, instance) (rate(ruby_http_duration_seconds_sum[5m])) / 
         sum without (pod, instance) (rate(ruby_http_duration_seconds_count[5m]))
       record: app:ruby_http_duration_seconds:mean
+---
+{{- end }}
+{{- end }}

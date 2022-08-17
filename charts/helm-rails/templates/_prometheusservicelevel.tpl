@@ -1,4 +1,4 @@
-{{- define "prometheusrules" -}}
+{{- define "prometheusservicelevel" -}}
 {{- if .prometheusservicelevel.enabled -}}
 apiVersion: sloth.slok.dev/v1
 kind: PrometheusServiceLevel

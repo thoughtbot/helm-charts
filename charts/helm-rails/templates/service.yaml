@@ -36,8 +36,10 @@
 --- 
 {{        template "deployment" $service }}
 --- 
-{{        template "prometheusrules" $service }}
+{{        template "prometheusservicelevel" $service }}
 --- 
+{{        template "prometheusrules" $service }}
+---
 {{        template "service" $service }}
 --- 
 {{        template "hpa" $service }}
