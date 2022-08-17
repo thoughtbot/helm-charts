@@ -17,7 +17,9 @@ defaults:
     - type: Resource
       resource:
         name: cpu
-        targetAverageUtilization: 65
+        target:
+          type: Utilization
+          averageUtilization: 65
     behavior:
       scaleDown:
         policies:

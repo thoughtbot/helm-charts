@@ -4,6 +4,6 @@ description: Helm chart for deploying Rails applications
 
 type: application
 
-version: 0.1.3
+version: 0.1.4
 
 appVersion: 1.0.0
