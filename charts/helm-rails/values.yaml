@@ -18,6 +18,22 @@ defaults:
       resource:
         name: cpu
         targetAverageUtilization: 70
+    behavior:
+      scaleDown:
+        policies:
+        - periodSeconds: 60
+          type: Pods
+          value: 1
+        stabilizationWindowSeconds: 120
+      scaleUp:
+        policies:
+        - periodSeconds: 120
+          type: Percent
+          value: 25
+        - periodSeconds: 120
+          type: Pods
+          value: 3
+        selectPolicy: Max
 
   autosizing:
     updatePolicy:
@@ -52,6 +68,12 @@ defaults:
     - flightdeck/flightdeck
     retries:
       attempts: 0
+
+  externalService:
+  - type: local
+    externalnamespace: ""
+    url: ""
+    port: ""
 
 config:
   env:

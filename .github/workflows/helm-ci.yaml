@@ -7,7 +7,7 @@ on:
 
 defaults:
   run:
-    working-directory: charts
+    working-directory: charts/helm-rails
 
 jobs:
   test:

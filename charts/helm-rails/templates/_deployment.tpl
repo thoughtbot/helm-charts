@@ -31,3 +31,4 @@ spec:
 {{- end }}
 {{- include "pod" $pod | nindent 4 }}
 {{- end }}
+---
