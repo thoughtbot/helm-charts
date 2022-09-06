@@ -10,6 +10,21 @@ spec:
 {{- if .backoffLimit }}
   backoffLimit: {{ .backoffLimit }}
 {{- end }}
+{{- if .startingDeadlineSeconds }}
+  startingDeadlineSeconds: {{ .startingDeadlineSeconds }}
+{{- end }}
+{{- if .concurrencyPolicy }}
+  concurrencyPolicy: {{ .concurrencyPolicy }}
+{{- end }}
+{{- if .suspend }}
+  suspend: {{ .suspend }}
+{{- end }}
+{{- if .successfulJobsHistoryLimit }}
+  successfulJobsHistoryLimit: {{ .successfulJobsHistoryLimit }}
+{{- end }}
+{{- if .failedJobsHistoryLimit }}
+  failedJobsHistoryLimit: {{ .failedJobsHistoryLimit }}
+{{- end }}
   schedule: {{ .schedule | toYaml }}
   jobTemplate:
     metadata:
