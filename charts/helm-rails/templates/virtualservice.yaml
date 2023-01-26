@@ -4,7 +4,7 @@
 {{-     if and $namespaceSet.namespace.virtualservice.enabled -}}
 {{-       $_ := merge $namespaceSet (deepCopy $.Values.defaults) -}}
 {{-       $_ := set $namespaceSet "Release" $.Release -}}
-{{-       $_ := set $namespaceSet "Values" $.Values -}}
+{{-       $_ := set $namespaceSet "Values" (deepCopy $.Values) -}}
 ---
 {{        template "virtualservice" $namespaceSet }}
 ---

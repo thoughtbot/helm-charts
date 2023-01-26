@@ -19,7 +19,7 @@ envFrom:
 {{- if hasKey $.Values.config .name -}}
 {{- $namedRef := deepCopy . -}}
 {{- $_ := set $namedRef "Release" $.Release -}}
-{{- $_ := set $namedRef "Values" $.Values -}}
+{{- $_ := set $namedRef "Values" (deepCopy $.Values) -}}
 {{- $_ := set $namedRef "component" .name -}}
 {{- $_ := set . "name" (include "fullname" $namedRef) -}}
 {{- end -}}

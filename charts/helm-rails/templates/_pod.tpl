@@ -19,7 +19,7 @@ spec:
 {{- $_ := merge $container $containerDefaults }}
 {{- $_ := set $container "name" (default $key $container.name) }}
 {{- $_ := set $container "Release" $.Release }}
-{{- $_ := set $container "Values" $.Values }}
+{{- $_ := set $container "Values" (deepCopy $.Values) }}
   - {{ include "container" $container | nindent 4 | trim }}
 {{- end }}
 {{- if .initContainers }}
@@ -28,7 +28,7 @@ spec:
 {{- $_ := merge $container $containerDefaults }}
 {{- $_ := set $container "name" (default $key $container.name) }}
 {{- $_ := set $container "Release" $.Release }}
-{{- $_ := set $container "Values" $.Values }}
+{{- $_ := set $container "Values" (deepCopy $.Values) }}
   - {{ include "container" $container | nindent 4 | trim }}
 {{- end }}
 {{- end }}
@@ -60,7 +60,7 @@ spec:
 {{- if hasKey $.Values.config .name -}}
 {{- $namedRef := deepCopy . -}}
 {{- $_ := set $namedRef "Release" $.Release -}}
-{{- $_ := set $namedRef "Values" $.Values -}}
+{{- $_ := set $namedRef "Values" (deepCopy $.Values) -}}
 {{- $_ := set . "name" (include "fullname" $namedRef) -}}
 {{ end }}
 {{ end }}

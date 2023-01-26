@@ -1,7 +1,7 @@
 {{- range $namespace := .Values.namespaces -}}
 {{-   $namespaceSet := dict "namespace" $namespace -}}
 {{-   $_ := set $namespaceSet "Release" $.Release -}}
-{{-   $_ := set $namespaceSet "Values" $.Values -}}
+{{-   $_ := set $namespaceSet "Values" (deepCopy $.Values) -}}
 {{- $secretproviderclasslist:= list }}
 {{- if $namespace.secretproviderclass }}
   {{- range $key,$value:= $namespace.secretproviderclass }}
@@ -31,7 +31,7 @@
 {{-     $allservicenames := default $service.templateservices (list (default $key $service.name)) -}}
 {{-     range $multiservicenames := $allservicenames -}}        
 {{        $_ := set $service "Release" $.Release -}}
-{{-       $_ := set $service "Values" $.Values -}}
+{{-       $_ := set $service "Values" (deepCopy $.Values) -}}
 {{-       $_ := set $service "component" $multiservicenames -}}
 {{-       $_ := set $service "namespace" $namespace -}}
 {{-       $_ := set $service "secretproviderclasslist" $secretproviderclasslist -}}

@@ -1,7 +1,7 @@
 {{- range $namespace := .Values.namespaces -}}
 {{ range $name, $data := $.Values.config }}
 {{- $_ := set . "Release" $.Release -}}
-{{- $_ := set . "Values" $.Values -}}
+{{- $_ := set . "Values" (deepCopy $.Values) -}}
 {{ $_ := set . "component" $name }}
 ---
 apiVersion: v1

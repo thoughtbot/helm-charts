@@ -5,7 +5,7 @@
 {{-     $_ := merge $container (deepCopy (default dict (get $.Values.containers $containerKey))) -}}
 {{-   end -}}
 {{      $_ := set $cronjob "Release" $.Release -}}
-{{-     $_ := set $cronjob "Values" $.Values -}}
+{{-     $_ := set $cronjob "Values" (deepCopy $.Values) -}}
 {{-     $_ := set $cronjob "component" (default $key $cronjob.name) -}}
 {{-     $_ := set $cronjob "namespace" $namespace -}}
 ---
