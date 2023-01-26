@@ -38,5 +38,12 @@ jobs:
         uses: helm/kind-action@v1.2.0
         if: steps.list-changed.outputs.changed == 'true'
 
+      - name: Install chart dependencies
+        run: |
+          helm repo add istio https://istio-release.storage.googleapis.com/charts
+          helm repo update
+          kubectl create namespace istio-system
+          helm install istio-base istio/base -n istio-system
+
       - name: Run chart-testing (install)
         run: ct install --target-branch ${{ github.event.repository.default_branch }}
