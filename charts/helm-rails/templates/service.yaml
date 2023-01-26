@@ -9,8 +9,10 @@
   {{- end }}
 {{- end }}
 ---
+{{- if $namespace.create }}
 {{   template "namespace" $namespaceSet }}
 ---
+{{- end }}
 {{- range $key, $service := $.Values.services -}}
 {{-   $_ := merge $service (deepCopy $.Values.defaults) -}}
 {{-   range $containerKey, $container := $service.containers -}}

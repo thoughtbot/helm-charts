@@ -1,11 +1,13 @@
 {{- range $namespace := .Values.namespaces -}}
 {{-   $namespaceSet := dict "namespace" $namespace -}}
-{{-   if and $namespaceSet.namespace.virtualservice.enabled -}}
-{{-     $_ := merge $namespaceSet (deepCopy $.Values.defaults) -}}
-{{-     $_ := set $namespaceSet "Release" $.Release -}}
-{{-     $_ := set $namespaceSet "Values" $.Values -}}
+{{-   if $namespaceSet.namespace.virtualservice -}}
+{{-     if and $namespaceSet.namespace.virtualservice.enabled -}}
+{{-       $_ := merge $namespaceSet (deepCopy $.Values.defaults) -}}
+{{-       $_ := set $namespaceSet "Release" $.Release -}}
+{{-       $_ := set $namespaceSet "Values" $.Values -}}
 ---
-{{      template "virtualservice" $namespaceSet }}
+{{        template "virtualservice" $namespaceSet }}
 ---
+{{-     end -}}
 {{-   end -}}
 {{- end -}}

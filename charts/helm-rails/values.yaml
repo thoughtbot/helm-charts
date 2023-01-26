@@ -131,6 +131,7 @@ services: {}
 
 namespaces:
 - name: default
+  create: false
   virtualservice:
     enabled: true
   serviceaccount:
