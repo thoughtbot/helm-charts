@@ -1,6 +1,11 @@
 apiVersion: v2
 name: helm-rails
 description: Helm chart for deploying Rails applications
+maintainers:
+  - name: OlamideOl1
+    email: olamide@thoughtbot.com
+  - name: jferris
+    email: jferris@thoughtbot.com
 
 type: application
 
