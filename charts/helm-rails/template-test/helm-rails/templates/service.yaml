@@ -1,19 +1,6 @@
 ---
 # Source: helm-rails/templates/service.yaml
-apiVersion: v1
-kind: Namespace
-metadata:
-  name: default
-  labels:
-    istio-injection: enabled
-    app.kubernetes.io/instance: production
-    app.kubernetes.io/name: example-app
-    app.kubernetes.io/version: "458cd7e"
-    app.kubernetes.io/managed-by: Helm
-    initiator: githubActions
----
-# Source: helm-rails/templates/service.yaml
-apiVersion: policy/v1beta1
+apiVersion: policy/v1
 kind: PodDisruptionBudget
 metadata:
   name: example-app-web
@@ -34,8 +21,6 @@ spec:
       app.kubernetes.io/name: example-app
 ---
 # Source: helm-rails/templates/service.yaml
---- 
-
 apiVersion: v1
 kind: Service
 metadata:
@@ -78,6 +63,8 @@ metadata:
     app.kubernetes.io/version: "458cd7e"
     app.kubernetes.io/managed-by: Helm
     initiator: githubActions
+  annotations:
+    secret.reloader.stakater.com/reload: "secretsmanager"
 spec:
   selector:
     matchLabels:
@@ -160,6 +147,8 @@ metadata:
     app.kubernetes.io/version: "458cd7e"
     app.kubernetes.io/managed-by: Helm
     initiator: githubActions
+  annotations:
+    secret.reloader.stakater.com/reload: "secretsmanager"
 spec:
   selector:
     matchLabels:
@@ -241,6 +230,8 @@ metadata:
     app.kubernetes.io/version: "458cd7e"
     app.kubernetes.io/managed-by: Helm
     initiator: githubActions
+  annotations:
+    secret.reloader.stakater.com/reload: "secretsmanager"
 spec:
   selector:
     matchLabels:
@@ -323,6 +314,8 @@ metadata:
     app.kubernetes.io/version: "458cd7e"
     app.kubernetes.io/managed-by: Helm
     initiator: githubActions
+  annotations:
+    secret.reloader.stakater.com/reload: "secretsmanager"
 spec:
   selector:
     matchLabels:
@@ -489,7 +482,6 @@ spec:
             secretProviderClass: secretsmanager
 ---
 # Source: helm-rails/templates/service.yaml
----
 apiVersion: autoscaling/v2beta2
 kind: HorizontalPodAutoscaler
 metadata:
@@ -521,6 +513,22 @@ spec:
         kind: Service
         name: example-app-default-worker
     type: Object
+  behavior:
+    scaleDown:
+      policies:
+      - periodSeconds: 60
+        type: Pods
+        value: 1
+      stabilizationWindowSeconds: 120
+    scaleUp:
+      policies:
+      - periodSeconds: 120
+        type: Percent
+        value: 25
+      - periodSeconds: 120
+        type: Pods
+        value: 3
+      selectPolicy: Max
 ---
 # Source: helm-rails/templates/service.yaml
 ---
@@ -598,6 +606,18 @@ spec:
 ---
 ---
 # Source: helm-rails/templates/service.yaml
+---
+---
+# Source: helm-rails/templates/service.yaml
+---
+---
+# Source: helm-rails/templates/service.yaml
+---
+---
+# Source: helm-rails/templates/service.yaml
+---
+---
+# Source: helm-rails/templates/service.yaml
 apiVersion: monitoring.coreos.com/v1
 kind: ServiceMonitor
 metadata:
@@ -621,7 +641,6 @@ spec:
       app.kubernetes.io/name: example-app
 ---
 # Source: helm-rails/templates/service.yaml
---- 
 apiVersion: monitoring.coreos.com/v1
 kind: ServiceMonitor
 metadata:
@@ -645,7 +664,6 @@ spec:
       app.kubernetes.io/name: example-app
 ---
 # Source: helm-rails/templates/service.yaml
---- 
 apiVersion: monitoring.coreos.com/v1
 kind: ServiceMonitor
 metadata:

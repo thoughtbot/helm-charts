@@ -22,15 +22,28 @@ spec:
   - match:
     - uri:
         prefix: {{ $service.virtualservice.matchprefix }}
+{{- with $service.virtualservice.retries }}
     retries:
-      attempts: {{ .virtualservice.retries.attempts }}
+      {{- . | toYaml | nindent 6 }}
+{{- end }}
+{{- with $service.virtualservice.corsPolicy }}
+    corsPolicy:
+      {{- . | toYaml | nindent 6 }}
+{{- end }}
     route:
     - destination:
 {{- $values := dict "Values" $.Values "Release" $.Release -}}
 {{- $_ := set $values "component" (default $key $service.name) }}
         host: {{ include "fullname" $values }}
+{{- range $containerKey, $container := $service.containers -}}
+{{-   if hasKey $container "http" }}
         port:
-          number: {{ $.Values.defaults.service.http.port }}
+          number: {{ default $.Values.defaults.service.http.port $container.http.port }}
+{{-   end }}
+{{- end -}}
+{{- if $service.virtualservice.timeout }}
+    timeout: {{ $service.virtualservice.timeout }}
+{{- end -}}
 {{- if $service.virtualservice.headers }}
     headers:
       request:

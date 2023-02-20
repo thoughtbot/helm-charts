@@ -25,8 +25,7 @@ spec:
     route:
     - destination:
         host: example-app-default-worker
-        port:
-          number: 3000
+    timeout: 15s
   - match:
     - uri:
         prefix: /reports-worker
@@ -35,8 +34,7 @@ spec:
     route:
     - destination:
         host: example-app-reports-worker
-        port:
-          number: 3000
+    timeout: 15s
   - match:
     - uri:
         prefix: /home
@@ -47,6 +45,7 @@ spec:
         host: example-app-web
         port:
           number: 3000
+    timeout: 15s
     headers:
       request:
         set:
