@@ -25,6 +25,40 @@ spec:
         disable: true
       ticketAlert:
         disable: true
+  - name: "{{ $.Release.Name }}-{{ .namespace.name }}-requests-99-latency"
+    objective: 99
+    description: "Common SLO based on latency for HTTP request responses"
+    sli:
+      events:
+        errorQuery: sum_over_time((sum(rate(istio_request_duration_milliseconds_count{destination_service_name={{ include "fullname" . | quote }}}[5m])))[{{.window}}:5m]) - sum_over_time((sum(rate(istio_request_duration_milliseconds_bucket{destination_service_name={{ include "fullname" . | quote }},le="1500"}[5m])))[{{.window}}:5m])
+        totalQuery: sum_over_time((sum(rate(istio_request_duration_milliseconds_count{destination_service_name={{ include "fullname" . | quote }}}[5m])))[{{.window}}:5m]) > 0
+    alerting:
+      name: AdminLatency99th
+      labels:
+        category: "latency"
+      annotations:
+        summary: "High latency on requests responses"
+      pageAlert:
+        disable: true
+      ticketAlert:
+        disable: true
+  - name: "{{ $.Release.Name }}-{{ .namespace.name }}-requests-95-latency"
+    objective: 95
+    description: "Common SLO based on latency for HTTP request responses"
+    sli:
+      events:
+        errorQuery: sum_over_time((sum(rate(istio_request_duration_milliseconds_count{destination_service_name={{ include "fullname" . | quote }}}[5m])))[{{.window}}:5m]) - sum_over_time((sum(rate(istio_request_duration_milliseconds_bucket{destination_service_name={{ include "fullname" . | quote }},le="750"}[5m])))[{{.window}}:5m])
+        totalQuery: sum_over_time((sum(rate(istio_request_duration_milliseconds_count{destination_service_name={{ include "fullname" . | quote }}}[5m])))[{{.window}}:5m]) > 0
+    alerting:
+      name: HTTPLatency95th
+      labels:
+        category: "latency"
+      annotations:
+        summary: "High latency on requests responses"
+      pageAlert:
+        disable: true
+      ticketAlert:
+        disable: true
 ---
 {{- end }}
 {{- end }}
