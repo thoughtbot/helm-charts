@@ -33,8 +33,8 @@ spec:
     description: "Common SLO based on latency for HTTP request responses"
     sli:
       events:
-        errorQuery: sum_over_time((sum(rate(istio_request_duration_milliseconds_count{destination_service_name={{ include "fullname" $ | quote }}}[5m])))[{{.window}}:5m]) - sum_over_time((sum(rate(istio_request_duration_milliseconds_bucket{destination_service_name={{ include "fullname" . | quote }},le="{{ $slo.target }}"}[5m])))[{{.window}}:5m])
-        totalQuery: sum_over_time((sum(rate(istio_request_duration_milliseconds_count{destination_service_name={{ include "fullname" $ | quote }}}[5m])))[{{.window}}:5m]) > 0
+        errorQuery: sum_over_time((sum(rate(istio_request_duration_milliseconds_count{destination_service_name={{ include "fullname" $ | quote }}}[5m])))[{{ "{{.window}}" }}:5m]) - sum_over_time((sum(rate(istio_request_duration_milliseconds_bucket{destination_service_name={{ include "fullname" . | quote }},le="{{ $slo.target }}"}[5m])))[{{ "{{.window}}" }}:5m])
+        totalQuery: sum_over_time((sum(rate(istio_request_duration_milliseconds_count{destination_service_name={{ include "fullname" $ | quote }}}[5m])))[{{ "{{.window}}" }}:5m]) > 0
     alerting:
       name: {{ $slo.name }}
       labels:
