@@ -15,7 +15,7 @@ spec:
 {{- if .namespace.secretproviderclass }}
 {{- $_ := set $pod "secretproviderclasses" .namespace.secretproviderclass }}
 {{- end }}
-{{- if .namespace.secretproviderclass }}
+{{- if .namespace.serviceaccount }}
 {{- $_ := set $pod "podserviceaccounts" .namespace.serviceaccount }}
 {{- end }}
 {{- include "pod" $pod | nindent 4 }}

@@ -42,6 +42,19 @@ YAML
         containers:
           rails:
             http: {}
+    jobs:
+      example:
+        containers:
+          main:
+            rails: {}
+        restartPolicy: Never
+
+    cronjobs:
+      example:
+        schedule: '*/10 * * * *'
+        containers:
+          main: {}
+        restartPolicy: Never
     namespaces:
       - name: default
         serviceaccount:
@@ -52,6 +65,10 @@ YAML
   assert_no_object 'ServiceAccount' 'example-app-web'
   select_object 'Deployment' 'example-app-web'
   assert_json '.spec.template.spec.serviceAccountName' 'example-app-web'
+  select_object 'Job' 'example-app-example'
+  assert_json '.spec.template.spec.serviceAccountName' 'example-app-web'
+  select_object 'CronJob' 'example-app-example'
+  assert_json '.spec.jobTemplate.spec.template.spec.serviceAccountName' 'example-app-web'
 }
 
 @test "skips a serviceaccount when disabled" {
