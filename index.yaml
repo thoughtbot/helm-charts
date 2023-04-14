@@ -3,6 +3,21 @@ entries:
   helm-rails:
   - apiVersion: v2
     appVersion: 1.0.0
+    created: "2023-04-14T18:11:03.195222378Z"
+    description: Helm chart for deploying Rails applications
+    digest: 9ce3797d4adae77996bb8fc0a045f2db49077fa55b2a19ba9c9c4c63a3a0dd19
+    maintainers:
+    - email: olamide@thoughtbot.com
+      name: OlamideOl1
+    - email: jferris@thoughtbot.com
+      name: jferris
+    name: helm-rails
+    type: application
+    urls:
+    - https://github.com/thoughtbot/helm-charts/releases/download/helm-rails-0.1.12/helm-rails-0.1.12.tgz
+    version: 0.1.12
+  - apiVersion: v2
+    appVersion: 1.0.0
     created: "2023-04-14T15:35:51.422318144Z"
     description: Helm chart for deploying Rails applications
     digest: 6e14430a08d8fe5eefb34c3390c11066edd9174b9c77a324cb1668632c6c69ba
@@ -126,4 +141,4 @@ entries:
     urls:
     - https://github.com/thoughtbot/helm-charts/releases/download/helm-rails-0.1.2/helm-rails-0.1.2.tgz
     version: 0.1.2
-generated: "2023-04-14T15:35:51.422698852Z"
+generated: "2023-04-14T18:11:03.195260778Z"
