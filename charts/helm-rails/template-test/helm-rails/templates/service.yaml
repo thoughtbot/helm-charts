@@ -482,7 +482,7 @@ spec:
             secretProviderClass: secretsmanager
 ---
 # Source: helm-rails/templates/service.yaml
-apiVersion: autoscaling/v2beta2
+apiVersion: autoscaling/v2
 kind: HorizontalPodAutoscaler
 metadata:
   name: example-app-default-worker
@@ -532,7 +532,7 @@ spec:
 ---
 # Source: helm-rails/templates/service.yaml
 ---
-apiVersion: autoscaling/v2beta2
+apiVersion: autoscaling/v2
 kind: HorizontalPodAutoscaler
 metadata:
   name: example-app-web
